@@ -1,7 +1,6 @@
 package com.opzero.device.service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,23 +30,23 @@ public class DeviceService {
 
     private final MqttService mqttService;
 
-    public List<Device> getAll(){
+    public List<Device> getAll() {
         return deviceRepository.findAll();
     }
 
-    public Device get(String deviceId){
-        Optional<Device> optionalDevice= deviceRepository.findById(deviceId);
-        if(!optionalDevice.isPresent()){
-            throw new DeviceNotFoundException("device not found with deviceId: "+deviceId);
+    public Device get(String deviceId) {
+        Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
+        if (!optionalDevice.isPresent()) {
+            throw new DeviceNotFoundException("device not found with deviceId: " + deviceId);
         }
         Device device = optionalDevice.get();
         return device;
     }
 
-    public boolean add(DeviceCreateRequest request){
+    public boolean add(DeviceCreateRequest request) {
         Optional<Device> optionalDevice = deviceRepository.findOneByMacAddress(request.getMacAddress());
-        if(optionalDevice.isPresent()){
-            throw new DeviceNotFoundException("device already found with mac address: "+request.getMacAddress());
+        if (optionalDevice.isPresent()) {
+            throw new DeviceNotFoundException("device already found with mac address: " + request.getMacAddress());
         }
         Device device = new Device();
         device.setMacAddress(request.getMacAddress());
@@ -65,9 +64,9 @@ public class DeviceService {
         return true;
     }
 
-    public boolean updateDeviceSettings(String deviceId,DeviceUpdateRequest request){
+    public boolean updateDeviceSettings(String deviceId, DeviceUpdateRequest request) {
         Optional<Device> optionalDevice = deviceRepository.findOneByMacAddress(deviceId);
-        if(optionalDevice.isEmpty()){
+        if (optionalDevice.isEmpty()) {
             throw new DeviceNotFoundException(deviceId);
         }
 
@@ -81,13 +80,14 @@ public class DeviceService {
 
         // TODO: Make string
         String strMsg = toJson(message);
-        
+
         mqttService.publish(deviceId, strMsg);
 
         Device device = optionalDevice.get();
         device.setHeartbeat(LocalDateTime.now());
         device.setStatus("online");
-        // log.info("time: {}",LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        // log.info("time:
+        // {}",LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
 
         LightDetails lightDetails = new LightDetails();
         lightDetails.setLightStatus(request.getLightStatus());
@@ -117,15 +117,15 @@ public class DeviceService {
         }
     }
 
-    private String toJson(Message message){
+    private String toJson(Message message) {
         String strMsg = "";
-        try{
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
             strMsg = objectMapper.writeValueAsString(message);
-        }catch(JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        if (strMsg == ""){
+        if (strMsg == "") {
             throw new EmptyMessageException("message is empty");
         }
         return strMsg;

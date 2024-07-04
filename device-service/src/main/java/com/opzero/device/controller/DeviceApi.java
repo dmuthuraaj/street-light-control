@@ -23,21 +23,22 @@ public class DeviceApi {
 
     @GetMapping
     ResponseEntity<CommonResponse<List<Device>>> getAllDeviceData() {
-        List<Device> list= deviceService.getAll();
+        List<Device> list = deviceService.getAll();
         CommonResponse<List<Device>> commonResponse = new CommonResponse<>();
         commonResponse.setCode(200);
         commonResponse.setData(list);
-        commonResponse.setMessage("devices listed successfully");
+        commonResponse.setMessage("Devices Listed Successfully");
         return ResponseEntity.ok(commonResponse);
     }
 
     @GetMapping("/{deviceId}")
-    ResponseEntity<CommonResponse<Device>> getDeviceData(@PathVariable(name = "deviceId",required = true) String deviceId) {
-        Device device= deviceService.get(deviceId);
+    ResponseEntity<CommonResponse<Device>> getDeviceData(
+            @PathVariable(name = "deviceId", required = true) String deviceId) {
+        Device device = deviceService.get(deviceId);
         CommonResponse<Device> commonResponse = new CommonResponse<>();
         commonResponse.setCode(200);
         commonResponse.setData(device);
-        commonResponse.setMessage("devices listed successfully");
+        commonResponse.setMessage("Device Data Listed Successfully");
         return ResponseEntity.ok(commonResponse);
     }
 
@@ -47,18 +48,18 @@ public class DeviceApi {
         CommonResponse<Boolean> commonResponse = new CommonResponse<>();
         commonResponse.setCode(200);
         commonResponse.setData(isDone);
-        commonResponse.setMessage("device added successfully");
+        commonResponse.setMessage("Device Added Successfully");
         return ResponseEntity.ok(commonResponse);
     }
 
     @PostMapping("/{deviceId}/settings")
-    ResponseEntity<CommonResponse<String>>settings(@PathVariable(name = "deviceId",required = true) String deviceId,
-    @RequestBody DeviceUpdateRequest request){
-        deviceService.updateDeviceSettings(deviceId,request);
+    ResponseEntity<CommonResponse<String>> settings(@PathVariable(name = "deviceId", required = true) String deviceId,
+            @RequestBody DeviceUpdateRequest request) {
+        deviceService.updateDeviceSettings(deviceId, request);
         CommonResponse<String> commonResponse = new CommonResponse<>();
         commonResponse.setCode(200);
-        commonResponse.setData("SUCCESS");
-        commonResponse.setMessage("settings updated successfully");
+        commonResponse.setData("Settings Updated");
+        commonResponse.setMessage("Settings Updated Successfully");
         return ResponseEntity.ok(commonResponse);
     }
 }

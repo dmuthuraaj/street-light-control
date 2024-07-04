@@ -5,10 +5,10 @@ server:
   forward-headers-strategy: native
 
 logging:
-  level: 
+  level:
     org.springframework.web: DEBUG
     org.springframework.web.servlet: DEBUG
-  
+
 spring:
   application:
     name: iotserver
@@ -46,3 +46,6 @@ spring:
 mqtt:
   broker:
     url: tcp://mosquitto-broker:1883
+
+geocoding:
+  apiKey: 667683985cd31759718558trj97858d

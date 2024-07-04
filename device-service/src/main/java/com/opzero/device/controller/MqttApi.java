@@ -25,69 +25,75 @@
 // @AllArgsConstructor
 // public class MqttApi {
 
-//     @PostMapping("/publish")
-//     public void publishMessage(@RequestBody @Validated MqttPublishModel messagePublishModel,
-//                                BindingResult bindingResult) throws org.eclipse.paho.client.mqttv3.MqttException {
-//         if (bindingResult.hasErrors()) {
-//             throw new MqttException(ExceptionMessages.SOME_PARAMETERS_INVALID);
-//         }
-//         Message message = messagePublishModel.getMessage();
-//         MqttMessage mqttMessage = new MqttMessage(org.springframework.util.SerializationUtils.serialize(message));
-//         mqttMessage.setQos(messagePublishModel.getQos());
-//         mqttMessage.setRetained(messagePublishModel.getRetained());
+// @PostMapping("/publish")
+// public void publishMessage(@RequestBody @Validated MqttPublishModel
+// messagePublishModel,
+// BindingResult bindingResult) throws
+// org.eclipse.paho.client.mqttv3.MqttException {
+// if (bindingResult.hasErrors()) {
+// throw new MqttException(ExceptionMessages.SOME_PARAMETERS_INVALID);
+// }
+// Message message = messagePublishModel.getMessage();
+// MqttMessage mqttMessage = new
+// MqttMessage(org.springframework.util.SerializationUtils.serialize(message));
+// mqttMessage.setQos(messagePublishModel.getQos());
+// mqttMessage.setRetained(messagePublishModel.getRetained());
 
-//         MqttService.getInstance().publish(messagePublishModel.getTopic(), mqttMessage);
-//     }
+// MqttService.getInstance().publish(messagePublishModel.getTopic(),
+// mqttMessage);
+// }
 
-//     @GetMapping("/subscribe")
-//     public List<MqttSubscribeModel> subscribeChannel(@RequestParam(value = "topic") String topic,
-//                                                      @RequestParam(value = "wait_millis") Integer waitMillis)
-//             throws InterruptedException, org.eclipse.paho.client.mqttv3.MqttException {
-//         List<MqttSubscribeModel> messages = new ArrayList<>();
-//         CountDownLatch countDownLatch = new CountDownLatch(10);
-//         MqttService.getInstance().subscribeWithResponse(topic, (s, mqttMessage) -> {
-//             MqttSubscribeModel mqttSubscribeModel = new MqttSubscribeModel();
-//             mqttSubscribeModel.setId(mqttMessage.getId());
-//             Message message = org.springframework.util.SerializationUtils.deserialize(mqttMessage.getPayload());
-//             mqttSubscribeModel.setMessage(message);
-//             mqttSubscribeModel.setQos(mqttMessage.getQos());
-//             messages.add(mqttSubscribeModel);
-//             countDownLatch.countDown();
-//         });
+// @GetMapping("/subscribe")
+// public List<MqttSubscribeModel> subscribeChannel(@RequestParam(value =
+// "topic") String topic,
+// @RequestParam(value = "wait_millis") Integer waitMillis)
+// throws InterruptedException, org.eclipse.paho.client.mqttv3.MqttException {
+// List<MqttSubscribeModel> messages = new ArrayList<>();
+// CountDownLatch countDownLatch = new CountDownLatch(10);
+// MqttService.getInstance().subscribeWithResponse(topic, (s, mqttMessage) -> {
+// MqttSubscribeModel mqttSubscribeModel = new MqttSubscribeModel();
+// mqttSubscribeModel.setId(mqttMessage.getId());
+// Message message =
+// org.springframework.util.SerializationUtils.deserialize(mqttMessage.getPayload());
+// mqttSubscribeModel.setMessage(message);
+// mqttSubscribeModel.setQos(mqttMessage.getQos());
+// messages.add(mqttSubscribeModel);
+// countDownLatch.countDown();
+// });
 
-//         countDownLatch.await(waitMillis, TimeUnit.MILLISECONDS);
+// countDownLatch.await(waitMillis, TimeUnit.MILLISECONDS);
 
-//         return messages;
-//     }
-
+// return messages;
+// }
 
 // }
 
 // private static final String MQTT_PUBLISHER_ID = "spring-server";
-//     private static final String MQTT_SERVER_ADDRES= "tcp://test.mosquitto.org:1883";
-//     private static IMqttClient instance;
+// private static final String MQTT_SERVER_ADDRES=
+// "tcp://test.mosquitto.org:1883";
+// private static IMqttClient instance;
 
-//     public static IMqttClient getInstance() {
-//         try {
-//             if (instance == null) {
-//                 instance = new MqttClient(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);
-//             }
+// public static IMqttClient getInstance() {
+// try {
+// if (instance == null) {
+// instance = new MqttClient(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);
+// }
 
-//             MqttConnectOptions options = new MqttConnectOptions();
-//             options.setAutomaticReconnect(true);
-//             options.setCleanSession(true);
-//             options.setConnectionTimeout(10);
+// MqttConnectOptions options = new MqttConnectOptions();
+// options.setAutomaticReconnect(true);
+// options.setCleanSession(true);
+// options.setConnectionTimeout(10);
 
-//             if (!instance.isConnected()) {
-//                 instance.connect(options);
-//             }
-//         } catch (MqttException e) {
-//             e.printStackTrace();
-//         }
+// if (!instance.isConnected()) {
+// instance.connect(options);
+// }
+// } catch (MqttException e) {
+// e.printStackTrace();
+// }
 
-//         return instance;
-//     }
+// return instance;
+// }
 
-//     private MqttService() {
+// private MqttService() {
 
-//     }
+// }
