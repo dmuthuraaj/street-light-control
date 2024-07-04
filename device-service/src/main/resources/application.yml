@@ -1,0 +1,48 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /devices
+  forward-headers-strategy: native
+
+logging:
+  level: 
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet: DEBUG
+  
+spring:
+  application:
+    name: iotserver
+  task.scheduling.pool.size: 5
+  data:
+    mongodb:
+      port: 27017
+      host: localhost
+      database: device
+      auto-index-creation: true
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+mqtt:
+  broker:
+    url: tcp://localhost:1883
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - dev
+  data:
+    mongodb:
+      port: 27017
+      host: mongodb
+      username: admin
+      password: password
+      database: iot-device
+      authenticationDatabase: admin
+      auto-index-creation: true
+
+mqtt:
+  broker:
+    url: tcp://mosquitto-broker:1883

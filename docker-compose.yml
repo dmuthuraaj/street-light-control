@@ -1,0 +1,50 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  device-service:
+    build:
+      context: ./device-service
+      dockerfile: Dockerfile
+    ports:
+      - 9090:9090
+    depends_on:
+      - builder
+      - mongodb
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    # volumes:
+    #   - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:rw
+      - ./mosquitto/data:/mosquitto/data:rw
+      - ./mosquitto/log:/mosquitto/log:rw
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo_data:/data/db
+
+# volumes for mapping data,config and log
+volumes:
+  mongo_data:
+  data:
+  config:
+  log:
+
+networks:
+  default:
+    name: mqtt-network
