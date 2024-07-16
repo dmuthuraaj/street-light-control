@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,9 +13,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opzero.device.LightDetails;
 import com.opzero.device.LocationDetails;
+import com.opzero.device.PowerDetails;
 import com.opzero.device.config.MqttManager;
 import com.opzero.device.dto.request.Message;
 import com.opzero.device.exception.UnableToCreateException;
+import com.opzero.device.mapper.DeviceMapper;
 import com.opzero.device.mongo.entity.Device;
 import com.opzero.device.mongo.repository.DeviceRepository;
 import com.opzero.device.util.GetCity;
@@ -56,8 +57,9 @@ public class MqttService {
                 if (optionalDevice.isEmpty()) {
                     log.info("device not found");
                 }
+
                 Device device = optionalDevice.get();
-                // TODO: get message data and deserialize -> update device
+
                 ObjectMapper objectMapper = new ObjectMapper();
                 Message decodedMessage = new Message();
                 try {
@@ -65,6 +67,13 @@ public class MqttService {
                 } catch (JsonProcessingException e) {
                     throw new UnableToCreateException(e.getMessage());
                 }
+
+                PowerDetails powerDetails = new PowerDetails();
+                powerDetails.setPowerStatus(decodedMessage.getPowerStatus());
+                powerDetails.setUnit(decodedMessage.getUnit());
+                powerDetails.setCurrent(decodedMessage.getCurrent());
+                powerDetails.setVoltage(decodedMessage.getVoltage());
+                device.setPowerDetails(powerDetails);
 
                 log.info("Message received: {}", decodedMessage);
                 device.setPingTime(decodedMessage.getPingTime());
@@ -91,7 +100,7 @@ public class MqttService {
 
                 device.setLocationDetails(locationDetails);
 
-                device.setStatus("online");
+                device.setStatus(DeviceMapper.processOnline());
                 device.setHeartbeat(LocalDateTime.now());
                 device.setActive(true);
                 deviceDataRepository.save(device);

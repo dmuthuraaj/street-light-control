@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class MqttSubscribeModel {
-
     private Message message;
     private Integer qos;
     private Integer id;

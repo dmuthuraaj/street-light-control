@@ -25,8 +25,8 @@ public class MqttManager {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setAutomaticReconnect(true);
-        options.setKeepAliveInterval(60);
-        options.setConnectionTimeout(60);
+        // options.setKeepAliveInterval(60);
+        // options.setConnectionTimeout(60);
         // options.setUserName(username);
         // options.setPassword(password.toCharArray());
 

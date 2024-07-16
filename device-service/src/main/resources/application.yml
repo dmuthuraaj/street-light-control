@@ -6,6 +6,8 @@ server:
 
 logging:
   level:
+    org.eclipse.paho.client.mqttv3: DEBUG
+    com.example.mqttsubscriber: DEBUG
     org.springframework.web: DEBUG
     org.springframework.web.servlet: DEBUG
 
