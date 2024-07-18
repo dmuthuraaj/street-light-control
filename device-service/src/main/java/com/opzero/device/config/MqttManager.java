@@ -23,7 +23,7 @@ public class MqttManager {
         }
 
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(true);
+        options.setCleanSession(false);
         options.setAutomaticReconnect(true);
         // options.setKeepAliveInterval(60);
         // options.setConnectionTimeout(60);

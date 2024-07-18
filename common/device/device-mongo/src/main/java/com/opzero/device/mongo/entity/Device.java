@@ -20,9 +20,9 @@ public class Device extends BaseEntity {
     private String status;
     private LocalDateTime heartbeat;
     private String pingTime;
-    private String onTime;
-    private String offTime;
-    private String currentTime;
+    // private String onTime;
+    // private String offTime;
+    // private String currentTime;
     private PowerDetails powerDetails;
     private LightDetails lightDetails;
     private LocationDetails locationDetails;

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opzero.device.LightDetails;
+import com.opzero.device.PowerDetails;
 import com.opzero.device.dto.request.DeviceCreateRequest;
 import com.opzero.device.dto.request.DeviceUpdateRequest;
 import com.opzero.device.dto.request.Message;
@@ -51,11 +52,23 @@ public class DeviceService {
         Device device = new Device();
         device.setMacAddress(request.getMacAddress());
         device.setHeartbeat(LocalDateTime.now());
-        device.setPingTime(null);
-        device.setOnTime(null);
-        device.setOffTime(null);
-        device.setLightDetails(null);
-        device.setPowerDetails(null);
+        device.setPingTime("10000");
+        // device.setOnTime("18:00");
+        // device.setOffTime("06:00");
+
+        LightDetails lightDetails = new LightDetails();
+        lightDetails.setLightStatus("ON");
+        lightDetails.setLightOnTime("18:00");
+        lightDetails.setLightOffTime("06:00");
+        device.setLightDetails(lightDetails);
+
+        PowerDetails powerDetails = new PowerDetails();
+        powerDetails.setCurrent("00");
+        // powerDetails.setPowerStatus("ON");
+        powerDetails.setVoltage("12");
+        powerDetails.setCurrent("05");
+        device.setPowerDetails(powerDetails);
+
         device.setLocationDetails(null);
         device.setStatus("offline");
         device.setActive(false);
@@ -65,41 +78,24 @@ public class DeviceService {
     }
 
     public boolean updateDeviceSettings(String deviceId, DeviceUpdateRequest request) {
-        Optional<Device> optionalDevice = deviceRepository.findOneByMacAddress(deviceId);
+        Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
         if (optionalDevice.isEmpty()) {
             throw new DeviceNotFoundException(deviceId);
         }
+
+        Device device = optionalDevice.get();
 
         Message message = new Message();
         message.setLightStatus(request.getLightStatus());
         message.setLightOnTime(request.getLightOnTime());
         message.setLightOffTime(request.getLightOffTime());
         message.setPingTime(request.getPingTime());
-        message.setOnTime(request.getOnTime());
-        message.setOffTime(request.getOffTime());
+        // message.setOnTime(request.getOnTime());
+        // message.setOffTime(request.getOffTime());
 
-        // TODO: Make string
-        String strMsg = toJson(message);
-
-        mqttService.publish(deviceId, strMsg);
-
-        Device device = optionalDevice.get();
-        device.setHeartbeat(LocalDateTime.now());
-        device.setStatus("online");
-        // log.info("time:
-        // {}",LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-
-        LightDetails lightDetails = new LightDetails();
-        lightDetails.setLightStatus(request.getLightStatus());
-        lightDetails.setLightOnTime(request.getLightOnTime());
-        lightDetails.setLightOffTime(request.getLightOffTime());
-        device.setLightDetails(lightDetails);
-
-        device.setPingTime(request.getPingTime());
-        device.setOnTime(request.getOnTime());
-        device.setOffTime(request.getOffTime());
-
-        deviceRepository.save(device);
+        String strMsg = jsonToString(message);
+        log.info("String message: {}",strMsg);
+        mqttService.publish(device.getMacAddress(), strMsg);
 
         return true;
     }
@@ -117,17 +113,17 @@ public class DeviceService {
         }
     }
 
-    private String toJson(Message message) {
-        String strMsg = "";
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            strMsg = objectMapper.writeValueAsString(message);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        if (strMsg == "") {
-            throw new EmptyMessageException("message is empty");
-        }
-        return strMsg;
+    private String jsonToString(Message message) {
+    String strMsg = "";
+    try {
+    ObjectMapper objectMapper = new ObjectMapper();
+    strMsg = objectMapper.writeValueAsString(message);
+    } catch (JsonProcessingException e) {
+    throw new RuntimeException(e);
+    }
+    if (strMsg == "") {
+    throw new EmptyMessageException("message is empty");
+    }
+    return strMsg;
     }
 }

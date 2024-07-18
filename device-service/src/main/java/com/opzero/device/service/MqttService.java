@@ -35,8 +35,8 @@ public class MqttService {
 
     private final MqttManager mqttManager;
 
-    public void publish(String deviceId, String payload) {
-        String topic = "iot/devices/settings";
+    public void publish(String macAddress, String payload) {
+        String topic = "iot/devices/settings/" + macAddress;
         MqttMessage message = new MqttMessage();
         message.setPayload(payload.getBytes());
         try {
@@ -48,17 +48,11 @@ public class MqttService {
 
     @PostConstruct
     public void subscribeToTopics() throws MqttException {
-        mqttManager.getInstance().subscribe("iot/devices/#", new IMqttMessageListener() {
+        mqttManager.getInstance().subscribe("iot/devices", new IMqttMessageListener() {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
+                // todo: Check all exceptions and null values
                 String payload = new String(message.getPayload());
-                String mac = topic.split("/")[2];
-                Optional<Device> optionalDevice = deviceDataRepository.findOneByMacAddress(mac);
-                if (optionalDevice.isEmpty()) {
-                    log.info("device not found");
-                }
-
-                Device device = optionalDevice.get();
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 Message decodedMessage = new Message();
@@ -68,8 +62,16 @@ public class MqttService {
                     throw new UnableToCreateException(e.getMessage());
                 }
 
+                Optional<Device> optionalDevice = deviceDataRepository
+                        .findOneByMacAddress(decodedMessage.getMacAddress());
+                if (optionalDevice.isEmpty()) {
+                    log.info("device not found");
+                }
+
+                Device device = optionalDevice.get();
+
                 PowerDetails powerDetails = new PowerDetails();
-                powerDetails.setPowerStatus(decodedMessage.getPowerStatus());
+                // powerDetails.setPowerStatus(decodedMessage.getPowerStatus());
                 powerDetails.setUnit(decodedMessage.getUnit());
                 powerDetails.setCurrent(decodedMessage.getCurrent());
                 powerDetails.setVoltage(decodedMessage.getVoltage());

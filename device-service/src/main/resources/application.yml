@@ -13,7 +13,7 @@ logging:
 
 spring:
   application:
-    name: iotserver
+    name: device-service
   task.scheduling.pool.size: 5
   data:
     mongodb:
